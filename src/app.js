@@ -61,27 +61,42 @@ app.get("/userByEmail", async (req, res) => {
 })
 
 
-app.patch("/user", async (req, res) => {
-    const userData = req.body
-    const userId = req.body.userId
+app.patch("/user/:userId", async (req, res) => {
+    console.log(req.params.userId, req.body)
     try {
-        const user = await User.findByIdAndUpdate(userId, userData, { returnDocument: "after" })
-        if (!user) {
-            return res.status(404).send("User not found")
+        const userId = req.params?.userId;
+        const data = req.body;
+        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+        const isUpdateAllowed = Object.keys(data).every((k) =>
+            ALLOWED_UPDATES.includes(k)
+        );
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed");
         }
-        res.send("User Updated succesfully")
-    } catch (error) {
-        console.log("Error :", error.message)
-        res.status(400).send("Bad request")
+        if (data?.skills?.length > 10) {
+            throw new Error("Skills cannot be more than 10");
+        }
+        const user = await User.findByIdAndUpdate(userId, data, {
+            returnDocument: "after",
+            runValidators: true,
+        });
+        if(!user){
+            throw new Error("User not Found")
+        }
+        console.log(user);
+        res.send("User updated successfully");
+    } catch (err) {
+        res.status(400).send("UPDATE FAILED:" + err.message);
     }
-})
+}
+)
 
 
 app.patch("/userByEmail", async (req, res) => {
     const userEmail = req.body.emailId
     const userData = req.body
     try {
-        const user = await User.findOneAndUpdate({emailId : userEmail}, userData, { new: "true" })
+        const user = await User.findOneAndUpdate({ emailId: userEmail }, userData, { new: "true" })
         if (!user) {
             return res.status(404).send("User not found")
         }
