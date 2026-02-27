@@ -47,7 +47,12 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
       });
-      res.send("Login Successful!!!");
+
+      const {password, ...userWithoutPassword} = user.toObject()
+      res.status(200).json({
+        message: "Login Successfull",
+        data: userWithoutPassword
+      });
     } else {
       throw new Error("Invalid credentials");
     }
