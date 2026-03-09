@@ -3,7 +3,8 @@ const { connectDB } = require("../src/config/database")
 const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors")
-require('dotenv').config();
+
+require('dotenv').config({ path: "./src/.env" });
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
