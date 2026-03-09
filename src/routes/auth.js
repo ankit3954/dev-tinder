@@ -23,8 +23,21 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     });
 
-    await user.save();
-    res.send("User Added successfully!");
+    const savedUser = await user.save();
+    const token = await user.getJWT();
+
+    res.cookie("token", token, {
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
+    
+      
+    delete savedUser.toObject().password;
+
+    // const { , ...userWithoutPassword } = savedUser.toObject()
+    res.status(200).json({
+      message: "User Added Successfully",
+      data: savedUser
+    });
   } catch (err) {
     console.error(err)
     res.status(400).send("ERROR : " + err.message);
@@ -48,7 +61,7 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 8 * 3600000),
       });
 
-      const {password, ...userWithoutPassword} = user.toObject()
+      const { password, ...userWithoutPassword } = user.toObject()
       res.status(200).json({
         message: "Login Successfull",
         data: userWithoutPassword
