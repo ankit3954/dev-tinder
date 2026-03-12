@@ -1,12 +1,7 @@
-// import dotenv from "dotenv"
-// import { updateBookingsStatus } from "../controllers/movies.controller"
-// import { handlePaymentSuccess } from "../controllers/payment.controller"
-
-// dotenv.config()
 const { membershipAmount } = require("../utils/constants");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
-const YOUR_DOMAIN = 'http://localhost:5000'
+const YOUR_DOMAIN = process.env.FRONTEND_URL;
 
 
 const createStripeCheckoutSession = async (
@@ -30,42 +25,21 @@ const createStripeCheckoutSession = async (
                 quantity: 1
             },
         ],
-        metadata:{
+        metadata: {
             firstName,
             lastName,
-            emailId
+            emailId,
+            membershipType
         },
         mode: 'payment',
-        success_url: `${YOUR_DOMAIN}/payment/success`,
-        cancel_url: `${YOUR_DOMAIN}/payment/cancel`,
+        success_url: `${YOUR_DOMAIN}/premium`,
+        cancel_url: `${YOUR_DOMAIN}/premium`,
     });
 
     return session
 
 }
 
-
-const stripeWebhook = (body, sig) => {
-    const event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-
-    if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
-
-        const userDetails = session.metadata;
-
-        //updating booking status in db after confirming payment using webhook
-        // if(bookingId){
-        //     updateBookingsStatus(bookingId)
-        //     // sendBookingConfirmationMail(bookingId)
-        //     handlePaymentSuccess(bookingId)
-        // }
-
-        console.log(userDetails)
-    }
-
-}
-
 module.exports = {
     createStripeCheckoutSession,
-    stripeWebhook
 }
