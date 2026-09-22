@@ -20,17 +20,17 @@ cron.schedule("4 8 * * *", async () => {
 
         const listOfEmails = [...new Set(pendingRequests.map((req) => req.toUserId.emailId))]
 
-        for (const email of listOfEmails) {
-            try {
-                const res = await sendEmail.run(
-                    `New Friend Request is pending from ${email}`,
-                    "Please login in devzones.xyz for reviewing those requests"
-                )
-                console.log(res)
-            } catch (error) {
-                console.log(error)
-            }
-        }
+        // for (const email of listOfEmails) {
+        //     try {
+        //         const res = await sendEmail.run(
+        //             `New Friend Request is pending from ${email}`,
+        //             "Please login in devzones.xyz for reviewing those requests"
+        //         )
+        //         console.log(res)
+        //     } catch (error) {
+        //         console.log(error)
+        //     }
+        // }
 
     } catch (error) {
         console.log(error)
