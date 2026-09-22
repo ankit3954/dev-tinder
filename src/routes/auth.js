@@ -5,6 +5,13 @@ const { validateSignUpData } = require("../utils/validation");
 const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
 
+const cookieOptions = {
+  expires: new Date(Date.now() + 8 * 3600000),
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+}
+
 authRouter.post("/signup", async (req, res) => {
   try {
     // Validation of data
@@ -26,11 +33,9 @@ authRouter.post("/signup", async (req, res) => {
     const savedUser = await user.save();
     const token = await user.getJWT();
 
-    res.cookie("token", token, {
-        expires: new Date(Date.now() + 8 * 3600000),
-      });
-    
-      
+    res.cookie("token", token, cookieOptions);
+
+
     delete savedUser.toObject().password;
 
     // const { , ...userWithoutPassword } = savedUser.toObject()
@@ -57,9 +62,7 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       const token = await user.getJWT();
 
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 8 * 3600000),
-      });
+      res.cookie("token", token, cookieOptions);
 
       const { password, ...userWithoutPassword } = user.toObject()
       res.status(200).json({
@@ -76,9 +79,7 @@ authRouter.post("/login", async (req, res) => {
 
 
 authRouter.post("/logout", async (req, res) => {
-  res.cookie("token", null, {
-    expires: new Date(Date.now()),
-  });
+  res.cookie("token", token, cookieOptions);
   res.send("Logout Successful!!");
 });
 
