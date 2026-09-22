@@ -7,9 +7,9 @@ const bcrypt = require("bcrypt");
 
 const cookieOptions = {
   expires: new Date(Date.now() + 8 * 3600000),
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  httpOnly: true, 
+  secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
 }
 
 authRouter.post("/signup", async (req, res) => {
@@ -34,8 +34,8 @@ authRouter.post("/signup", async (req, res) => {
     const token = await user.getJWT();
 
     res.cookie("token", token, cookieOptions);
-
-
+    
+      
     delete savedUser.toObject().password;
 
     // const { , ...userWithoutPassword } = savedUser.toObject()
@@ -62,7 +62,7 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       const token = await user.getJWT();
 
-      res.cookie("token", token, cookieOptions);
+    res.cookie("token", token, cookieOptions);
 
       const { password, ...userWithoutPassword } = user.toObject()
       res.status(200).json({
@@ -79,7 +79,10 @@ authRouter.post("/login", async (req, res) => {
 
 
 authRouter.post("/logout", async (req, res) => {
-  res.cookie("token", token, cookieOptions);
+    res.cookie("token", null, {
+      ...cookieOptions,
+      expires: new Date(Date.now()), // Expires it immediately
+    });
   res.send("Logout Successful!!");
 });
 
