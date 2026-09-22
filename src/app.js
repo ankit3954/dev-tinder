@@ -19,10 +19,27 @@ const intializeSocket = require("./utils/socket");
 const server = http.createServer(app);
 intializeSocket(server)
 
+const allowedOrigins = [
+    "http://localhost:5173",                     // Local Vite development
+    "https://devzones-web.netlify.app/",        // Netlify domain
+    "https://devzones.xyz/",                     // GoDaddy custom domain
+    "https://www.devzones.xyz/"                 // Custom domain with www prefix
+];
+
+
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
-}))
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true 
+}));
+
 
 app.use(cookieParser());
 app.use("/", paymentRouter);
