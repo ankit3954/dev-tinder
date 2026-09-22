@@ -21,9 +21,9 @@ intializeSocket(server)
 
 const allowedOrigins = [
     "http://localhost:5173",                     // Local Vite development
-    "https://devzones-web.netlify.app/",        // Netlify domain
-    "https://devzones.xyz/",                     // GoDaddy custom domain
-    "https://www.devzones.xyz/"                 // Custom domain with www prefix
+    "https://devzones-web.netlify.app",        // Netlify domain
+    "https://devzones.xyz",                     // GoDaddy custom domain
+    "https://www.devzones.xyz"                 // Custom domain with www prefix
 ];
 
 
